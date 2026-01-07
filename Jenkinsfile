@@ -8,9 +8,9 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build with Maven') {
             steps {
-                echo 'Building application - version 4'
+                echo 'mvn clean package'
             }
         }
 
