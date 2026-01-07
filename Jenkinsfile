@@ -20,9 +20,11 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Tomcat') {
             steps {
-                echo 'Deploying application'
+		sh '''
+		cp target/myapp.war /opt/tomcat/webapps/
+                '''
             }
         }
     }
