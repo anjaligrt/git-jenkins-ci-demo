@@ -1,29 +1,28 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven'
+    }
+
     stages {
+
         stage('Checkout') {
             steps {
-                echo 'Checking out code'
+                git 'https://github.com/anjaligrt/git-jenkins-ci-demo.git'
             }
         }
 
-        stage('Build with Maven') {
+        stage('Build') {
             steps {
-                echo 'mvn clean package'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Running tests'
+                sh 'mvn clean package'
             }
         }
 
         stage('Deploy to Tomcat') {
             steps {
-		sh '''
-		cp target/myapp.war /opt/tomcat/webapps/
+                sh '''
+                scp target/*.war ubuntu@54.160.132.104:/opt/tomcat/webapps/myapp.war
                 '''
             }
         }
