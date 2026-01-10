@@ -12,6 +12,8 @@ pipeline {
                 git 'https://github.com/anjaligrt/git-jenkins-ci-demo.git'
             }
         }
+    
+ // TRIGGER BUILD
 
         stage('Build') {
             steps {
