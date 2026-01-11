@@ -3,9 +3,11 @@ pipeline {
 
     tools {
         maven 'Maven'
+        jdk 'JDK17'
     }
 
-    stages{
+    stages {
+
         stage('Build') {
             steps {
                 sh 'mvn clean package'
@@ -15,9 +17,19 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 sh '''
-                scp target/*.war ubuntu@34.233.135.189:/opt/tomcat/webapps/myapp.war
+                scp -o StrictHostKeyChecking=no target/*.war \
+                ubuntu@172.31.21.63:/opt/tomcat/webapps/myapp.war
                 '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Deployment successful"
+        }
+        failure {
+            echo "Deployment failed"
         }
     }
 }
