@@ -24,7 +24,7 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 sh '''
-                scp target/*.war ubuntu@54.160.132.104:/opt/tomcat/webapps/myapp.war
+                scp target/*.war ubuntu@34.233.135.189:/opt/tomcat/webapps/myapp.war
                 '''
             }
         }
