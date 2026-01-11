@@ -5,13 +5,6 @@ pipeline {
         maven 'Maven'
     }
 
-    stages {
-
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/anjaligrt/git-jenkins-ci-demo.git'
-            }
-        }
     
  // TRIGGER BUILD
 
