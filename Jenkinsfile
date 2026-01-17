@@ -8,8 +8,6 @@ pipeline {
 
     stages {
 
-//added this 'checkout' stage
-
         stage('Checkout') {
             steps {
                 git branch: 'main',
@@ -24,21 +22,28 @@ pipeline {
         }
 
         stage('Deploy to Tomcat') {
-            steps {
-                sh '''
-                scp -o StrictHostKeyChecking=no target/myapp.war \
-                ubuntu@172.31.21.5:/opt/tomcat/webapps/
-                '''
-            }
+           steps {
+               sh '''
+               if [ -f /opt/tomcat/webapps/myapp.war ]; then
+                   mv /opt/tomcat/webapps/myapp.war /opt/tomcat/webapps/myapp_backup.war
+               fi
+               cp target/myapp.war /opt/tomcat/webapps/
+               '''
+           }
         }
+
     }
 
-    post {
-        success {
-            echo "Deployment successful"
-        }
+
+     post {
         failure {
-            echo "Deployment failed"
+          echo 'Deployment failed. Rolling back...'
+          sh '''
+          if [ -f /opt/tomcat/webapps/myapp_backup.war ]; then
+             mv /opt/tomcat/webapps/myapp_backup.war /opt/tomcat/webapps/myapp.war
+          fi
+          '''
         }
-    }
+     }
+
 }
