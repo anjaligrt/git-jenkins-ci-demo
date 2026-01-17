@@ -8,6 +8,8 @@ pipeline {
 
     stages {
 
+//added this 'checkout' stage
+
         stage('Checkout') {
             steps {
                 git branch: 'main',
