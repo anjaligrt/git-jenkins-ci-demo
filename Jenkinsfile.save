@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven'
+        jdk 'JDK17'
+    }
+
+    stages {
+
+//added this 'checkout' stage
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/anjaligrt/git-jenkins-ci-demo.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Deploy to Tomcat') {
+            steps {
+                sh '''
+                if [ -f /opt/tomcat/webapps/myapp.war ]; then
+                   mv /opt/tomcat/webapps/myapp.war /opt/tomcat/webapps/myapp_backup.war
+                
+                
+                scp -o StrictHostKeyChecking=no target/myapp.war \
+                ubuntu@172.31.21.5:/opt/tomcat/webapps/
+                '''
+            }
+        }
+
+        stage('Archive Artifact') {
+          steps {
+            archiveArtifacts artifacts: 'target/*.war', fingerprint: true
+          }
+        }
+
+    }
+
+    post {
+        success {
+            echo "Deployment successful"
+        }
+        failure {
+            echo "Deployment failed"
+        }
+    }
+}

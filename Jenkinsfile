@@ -30,27 +30,48 @@ pipeline {
 
         stage('Deploy to Tomcat') {
            steps {
-               sh '''
-               if [ -f /opt/tomcat/webapps/myapp.war ]; then
-                   mv /opt/tomcat/webapps/myapp.war /opt/tomcat/webapps/myapp_backup.war
-               fi
-               cp target/myapp.war /opt/tomcat/webapps/
-               '''
+              sh '''
+              echo "Starting deployment..."
+
+              ssh ubuntu@TOMCAT_PRIVATE_IP "
+                 set -e
+
+                # Backup existing WAR
+                 if [ -f /opt/tomcat/webapps/myapp.war ]; then
+                    mv /opt/tomcat/webapps/myapp.war /opt/tomcat/webapps/myapp_backup.war
+                 fi
+              "
+
+              # Copy new WAR
+              scp target/myapp.war ubuntu@TOMCAT_PRIVATE_IP:/opt/tomcat/webapps/myapp.war
+
+              # Restart Tomcat
+              ssh ubuntu@TOMCAT_PRIVATE_IP "
+                 /opt/tomcat/bin/shutdown.sh || true
+                 sleep 5
+                 /opt/tomcat/bin/startup.sh
+              "
+              '''
            }
-        }
+        }     
 
     }
 
 
-     post {
-        failure {
-          echo 'Deployment failed. Rolling back...'
-          sh '''
-          if [ -f /opt/tomcat/webapps/myapp_backup.war ]; then
-             mv /opt/tomcat/webapps/myapp_backup.war /opt/tomcat/webapps/myapp.war
-          fi
-          '''
-        }
-     }
+    post {
+    failure {
+        echo "Deployment failed. Rolling back..."
 
+        sh '''
+        ssh ubuntu@TOMCAT_PRIVATE_IP "
+            if [ -f /opt/tomcat/webapps/myapp_backup.war ]; then
+                mv /opt/tomcat/webapps/myapp_backup.war /opt/tomcat/webapps/myapp.war
+                /opt/tomcat/bin/shutdown.sh || true
+                sleep 5
+                /opt/tomcat/bin/startup.sh
+            fi
+        "
+        '''
+     }
+    }
 }
