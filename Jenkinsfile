@@ -33,7 +33,7 @@ pipeline {
               sh '''
               echo "Starting deployment..."
 
-              ssh ubuntu@TOMCAT_PRIVATE_IP "
+              ssh ubuntu@172.31.21.5 "
                  set -e
 
                 # Backup existing WAR
@@ -43,10 +43,10 @@ pipeline {
               "
 
               # Copy new WAR
-              scp target/myapp.war ubuntu@TOMCAT_PRIVATE_IP:/opt/tomcat/webapps/myapp.war
+              scp target/myapp.war ubuntu@172.31.21.5:/opt/tomcat/webapps/myapp.war
 
               # Restart Tomcat
-              ssh ubuntu@TOMCAT_PRIVATE_IP "
+              ssh ubuntu@172.31.21.5 "
                  /opt/tomcat/bin/shutdown.sh || true
                  sleep 5
                  /opt/tomcat/bin/startup.sh
@@ -63,7 +63,7 @@ pipeline {
         echo "Deployment failed. Rolling back..."
 
         sh '''
-        ssh ubuntu@TOMCAT_PRIVATE_IP "
+        ssh ubuntu@172.31.21.5 "
             if [ -f /opt/tomcat/webapps/myapp_backup.war ]; then
                 mv /opt/tomcat/webapps/myapp_backup.war /opt/tomcat/webapps/myapp.war
                 /opt/tomcat/bin/shutdown.sh || true
