@@ -21,12 +21,6 @@ pipeline {
         }
         
         stage('Build with Maven (Dockerized)') {
-            agent {
-                docker {
-                    image 'maven:3.9.9-eclipse-temurin-21'
-                    args '-v /root/.m2:/root/.m2'
-                }
-            }
             steps {
                 sh 'mvn clean package'
             }
@@ -67,25 +61,24 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:latest .'
+                sh '''
+                docker build -t jenkins-maven-demo .
+                '''
             }
         }
 
         stage('Stop Old Container (if exists)') {
             steps {
                 sh '''
-                docker stop $CONTAINER_NAME || true
-                docker rm $CONTAINER_NAME || true
+                docker stop demo-app || true
+                docker rm demo-app || true
                 '''
             }
         }
         stage('Run Docker Container') {
             steps {
                 sh '''
-                docker run -d \
-                --name $CONTAINER_NAME \
-                -p 9090:8080 \
-                $IMAGE_NAME:latest
+                docker run -d -p 8081:8080 --name demo-app jenkins-maven-demo
                 '''
             }
         }
