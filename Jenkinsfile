@@ -21,38 +21,6 @@ pipeline {
             }
         }
 
-#        stage('Archive Artifact') {
-#           steps {
-#             archiveArtifacts artifacts: 'target/*.war', fingerprint: true
-#           }
-#        }
-#
-#        stage('Deploy to Tomcat') {
-#           steps {
-#              sh '''
-#              echo "Starting deployment..."
-#
-#              ssh ubuntu@172.31.21.5 "
-#                 set -e
-#
-#                # Backup existing WAR
-#                 if [ -f /opt/tomcat/webapps/myapp.war ]; then
-#                    mv /opt/tomcat/webapps/myapp.war /opt/tomcat/webapps/myapp_backup.war
-#                 fi
-#              "
-#
-#              # Copy new WAR
-#              scp target/myapp.war ubuntu@172.31.21.5:/opt/tomcat/webapps/myapp.war
-#
-#              # Restart Tomcat
-#              ssh ubuntu@172.31.21.5 "
-#                 /opt/tomcat/bin/shutdown.sh || true
-#                 sleep 5
-#                 /opt/tomcat/bin/startup.sh
-#              "
-#              '''
-#           }
-#        }     
 
         stage('Build Docker Image') {
             steps {
