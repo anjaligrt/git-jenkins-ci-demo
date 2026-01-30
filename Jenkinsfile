@@ -6,11 +6,6 @@ pipeline {
         CONTAINER_NAME = "demo-app"
     }
 
-#    tools {
-#        maven 'Maven'
-#        jdk 'JDK17'
-#    }
-
     stages {
 
         stage('Checkout') {
