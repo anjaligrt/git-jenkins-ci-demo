@@ -56,21 +56,3 @@ pipeline {
         }
     }
 }
-
-#    post {
-#    failure {
-#        echo "Deployment failed. Rolling back..."
-#
-#        sh '''
-#        ssh ubuntu@172.31.21.5 "
-#            if [ -f /opt/tomcat/webapps/myapp_backup.war ]; then
-#                mv /opt/tomcat/webapps/myapp_backup.war /opt/tomcat/webapps/myapp.war
-#                /opt/tomcat/bin/shutdown.sh || true
-#                sleep 5
-#                /opt/tomcat/bin/startup.sh
-#            fi
-#        "
-#        '''
-#     }
-#    }
-#}
